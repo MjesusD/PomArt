@@ -1,41 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:pomart/pages/timer.dart';
 import 'package:pomart/pages/profile.dart';
-import 'package:pomart/pages/content.dart';
+import 'package:pomart/pages/calendar.dart';
+import 'package:pomart/pages/cronoline.dart';
+import 'package:pomart/widgets/feed_view.dart'; 
 
-
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key, required this.title});
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex = 0;
-  static const TextStyle optionStyle = TextStyle(
-    fontSize: 30,
-    fontWeight: FontWeight.bold,
-  );
-  static const List<Widget> _widgetOptions = <Widget>[
-    Text('Index 0: Home', style: optionStyle),
-    Text('Index 1: Profile', style: optionStyle),
-    Text('Index 2: Timer', style: optionStyle),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(title),
         leading: Builder(
           builder: (context) {
             return IconButton(
@@ -47,69 +26,89 @@ class _MyHomePageState extends State<MyHomePage> {
           },
         ),
       ),
-      body: Center(child: _widgetOptions[_selectedIndex]),
+      body: const FeedView(), 
       drawer: Drawer(
-        // Add a ListView to the drawer. This ensures the user can scroll
-        // through the options in the drawer if there isn't enough vertical
-        // space to fit everything.
         child: ListView(
-          // Important: Remove any padding from the ListView.
           padding: EdgeInsets.zero,
           children: [
             const DrawerHeader(
-              decoration: BoxDecoration(color: Colors.blue),
-              child: Text('Drawer Header'),
+              decoration: BoxDecoration(
+                color: Color.fromARGB(255, 212, 173, 235),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CircleAvatar(
+                    radius: 30,
+                    backgroundImage: AssetImage('assets/images/logo2.png'),
+                  ),
+                  SizedBox(height: 12),
+                  Text(
+                    'POMART',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
             ),
             ListTile(
               title: const Text('Home'),
-              selected: _selectedIndex == 0,
               onTap: () {
-                // Update the state of the app
-                _onItemTapped(0);
-                // Then close the drawer
-                Navigator.pop(context);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const MyHomePage(title: 'Pomart Home'),
+                  ),
+                );
               },
             ),
             ListTile(
               title: const Text('Profile'),
-              selected: _selectedIndex == 1,
               onTap: () {
-                // Update the state of the app
-               // _onItemTapped(1);
-               Navigator.push(
+                Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const ProfilePage(title: 'Perfil',)),
+                  MaterialPageRoute(
+                    builder: (context) => const ProfilePage(title: 'Profile'),
+                  ),
                 );
               },
             ),
             ListTile(
               title: const Text('Timer'),
-              selected: _selectedIndex == 2,
               onTap: () {
-                // Update the state of the app
-                //_onItemTapped(2);
                 Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const TimerPage(title: 'Timer',)),
-                        );
-                // Then close the drawer
-                //Navigator.pop(context);
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const TimerPage(title: 'Timer'),
+                  ),
+                );
               },
             ),
             ListTile(
-              title: const Text('Content'),
-              selected: _selectedIndex == 3,
+              title: const Text('Calendar'),
               onTap: () {
-                // Update the state of the app
-                //_onItemTapped(2);
                 Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const ContentPage(title: 'Content',)),
-                        );
-                // Then close the drawer
-                //Navigator.pop(context);
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CalendarPage(title: 'Calendar'),
+                  ),
+                );
               },
-            )
+            ),
+            ListTile(
+              title: const Text('Cronoline'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CronolinePage(title: 'Cronoline'),
+                  ),
+                );
+              },
+            ),
           ],
         ),
       ),

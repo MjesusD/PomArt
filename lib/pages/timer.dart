@@ -1,88 +1,131 @@
 import 'package:flutter/material.dart';
+import 'package:pomart/widgets/pomodoro_controls.dart';
+import 'package:pomart/widgets/timer_display.dart';
+import 'package:pomart/entity/daily_theme.dart'; 
 
 
 class TimerPage extends StatefulWidget {
   const TimerPage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
-  State<TimerPage> createState() => _MyHomePageState();
+  State<TimerPage> createState() => _TimerPageState();
 }
 
-class _MyHomePageState extends State<TimerPage> {
-  int _counter = 0;
+class _TimerPageState extends State<TimerPage> {
+  static const int pomodoroDuration = 25 * 60;
+  int _remainingSeconds = pomodoroDuration;
+  bool _isRunning = false;
 
-  void _incrementCounter() {
+  final DailyTheme _dailyTheme = DailyTheme(); 
+
+  final Map<String, Color> _tagColors = {
+    'Enfoque': Colors.deepPurple,
+    'Relajado': Colors.teal,
+    'Intenso': Colors.redAccent,
+    'Creativo': Colors.orange,
+  };
+
+  String _selectedTag = 'Enfoque';
+
+  void _startTimer() {
+    setState(() => _isRunning = true);
+    
+  }
+
+  void _pauseTimer() {
+    setState(() => _isRunning = false);
+  }
+
+  void _resetTimer() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      _remainingSeconds = pomodoroDuration;
+      _isRunning = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    final Color currentColor = _tagColors[_selectedTag]!;
+    final String todayTopic = _dailyTheme.getThemeToday();
+
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the TimerPage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.music_note),
+            tooltip: 'Música',
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Música activada')),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.volume_up),
+            tooltip: 'Volumen',
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Volumen ajustado')),
+              );
+            },
+          ),
+        ],
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
             Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+              'Tema de hoy:',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            Text(
+              todayTopic,
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: currentColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            const SizedBox(height: 16),
+            // Selector de etiqueta
+            Wrap(
+              spacing: 10,
+              children: _tagColors.keys.map((tag) {
+                final isSelected = tag == _selectedTag;
+                return ChoiceChip(
+                  label: Text(tag),
+                  selected: isSelected,
+                  selectedColor: _tagColors[tag]!.withAlpha((255 * 0.3).round()),
+                  backgroundColor: Colors.grey[200],
+                  onSelected: (_) {
+                    setState(() => _selectedTag = tag);
+                  },
+                  labelStyle: TextStyle(
+                    color: isSelected ? _tagColors[tag] : Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 24),
+            // Reloj
+            TimerDisplay(
+              remainingSeconds: _remainingSeconds,
+              color: currentColor,
+            ),
+            const SizedBox(height: 30),
+            PomodoroControls(
+              isRunning: _isRunning,
+              onStart: _startTimer,
+              onPause: _pauseTimer,
+              onReset: _resetTimer,
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
