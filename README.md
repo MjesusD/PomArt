@@ -35,8 +35,6 @@ Alumna: Manuela Duarte
 
 
 ## 🔗 Links
-Presentación: https://drive.google.com/file/d/1pmChNKIydqi6rABqALxKhb88MRFzys0o/view?usp=sharing
-
-Video:  
+Presentación:  
 https://youtu.be/ZkmU9HVyFls 
 
