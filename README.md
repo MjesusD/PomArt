@@ -1,4 +1,4 @@
-# pomart
+# PomArt
 
 A new Flutter project.
 
