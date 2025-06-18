@@ -1,4 +1,4 @@
-package com.example.pomart
+package PomArt
 
 import io.flutter.embedding.android.FlutterActivity
 
