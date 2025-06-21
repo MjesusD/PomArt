@@ -73,18 +73,19 @@ class AboutPage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Padding(
-                padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
                 child: Text(
-                  'PomArt es una app para ayudarte a gestionar tu tiempo y creatividad, '
-                  'usando técnicas Pomodoro combinadas con temas artísticos diarios y seguimiento visual '
-                  'de tus sesiones para mantenerte motivado.',
+                  'PomArt es una app para artistas y aficionados al dibujo que combina la técnica Pomodoro con retos creativos diarios.\n\n'
+                  'Permite subir imágenes relacionadas con cada desafío, hacer seguimiento del progreso y compartir el proceso artístico con otros usuarios.\n\n'
+                  'Incluye un calendario, una línea temporal y una sección de inicio con publicaciones de la comunidad para inspirarte y mantener la motivación.',
                   style: textTheme.bodyLarge?.copyWith(
                     color: colorScheme.onPrimaryContainer,
-                    height: 1.4,
+                    height: 1.5,
                   ),
                   textAlign: TextAlign.justify,
                 ),
               ),
+
             ),
             const Spacer(),
             Center(

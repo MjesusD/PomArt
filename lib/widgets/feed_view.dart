@@ -104,7 +104,7 @@ class _FeedViewState extends State<FeedView> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Feed del tema: $_themeToday'),
+        title: Text('Progreso de otros usuarios'),
       ),
       body: fakeUsers.isEmpty
           ? Center(
