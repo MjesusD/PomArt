@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:pomart/pages/splash.dart';
-import 'package:pomart/theme/theme.dart';
+import 'package:pomart/entity/app_settings.dart';
+
+
+final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => AppSettings(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -11,12 +20,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final materialTheme = MaterialTheme(ThemeData.light().textTheme); 
+    final settings = Provider.of<AppSettings>(context);
 
     return MaterialApp(
-      theme: materialTheme.light(),         // Tema claro
-      //darkTheme: materialTheme.dark(),   // Tema oscuro
-      //themeMode: ThemeMode.system,      // Sistema operativo decide
+      theme: settings.lightTheme,
+      darkTheme: settings.darkTheme,
+      themeMode: settings.themeMode,
+      navigatorObservers: [routeObserver], 
       home: const SplashPage(),
     );
   }

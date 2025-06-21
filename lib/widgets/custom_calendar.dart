@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+
 class CustomCalendar extends StatelessWidget {
   final DateTime focusedDay;
   final DateTime? selectedDay;
   final Function(DateTime selectedDay, DateTime focusedDay) onDaySelected;
+  final CalendarBuilders calendarBuilders;
+
 
   const CustomCalendar({
-    super.key,
-    required this.focusedDay,
-    required this.selectedDay,
-    required this.onDaySelected,
-  });
+  super.key,
+  required this.focusedDay,
+  required this.selectedDay,
+  required this.onDaySelected,
+  this.calendarBuilders = const CalendarBuilders(),
+});
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +44,7 @@ class CustomCalendar extends StatelessWidget {
         formatButtonVisible: false,
         titleCentered: true,
       ),
+      calendarBuilders: calendarBuilders,
     );
   }
 }

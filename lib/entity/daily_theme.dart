@@ -8,7 +8,7 @@ class DailyTheme {
     'Insectos',
     'Anime',
     'Cartoon',
-    'Halloweeen',
+    'Halloween',
   ];
 
    String getThemeToday() {

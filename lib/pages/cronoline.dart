@@ -1,6 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:pomart/entity/user_session.dart';
-import 'package:pomart/widgets/session_timeline.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pomart/entity/session_entry.dart';
 
 class CronolinePage extends StatefulWidget {
   const CronolinePage({super.key, required this.title});
@@ -11,29 +12,65 @@ class CronolinePage extends StatefulWidget {
 }
 
 class _CronolinePageState extends State<CronolinePage> {
-  DateTime? _selectedDay;
+  List<SessionEntry> _sessions = [];
 
-  final Map<DateTime, List<UserSession>> _usageData = {
-    DateTime.utc(2024, 5, 10): [
-      UserSession(start: "09:00", end: "09:25"),
-      UserSession(start: "14:00", end: "14:30"),
-    ],
-    DateTime.utc(2024, 5, 11): [
-      UserSession(start: "12:00", end: "12:45"),
-    ],
-    DateTime.utc(2024, 5, 12): [
-      UserSession(start: "16:00", end: "16:30"),
-    ],
-  };
+  @override
+  void initState() {
+    super.initState();
+    _loadSessions();
+  }
 
-  List<UserSession> _getSessionsForDay(DateTime day) {
-    return _usageData[DateTime.utc(day.year, day.month, day.day)] ?? [];
+  Future<void> _loadSessions() async {
+    final prefs = await SharedPreferences.getInstance();
+    final stored = prefs.getStringList('session_entries') ?? [];
+
+    final loaded = stored
+        .map((e) => SessionEntry.fromJson(jsonDecode(e)))
+        .toList()
+      ..sort((a, b) => a.date.compareTo(b.date));
+
+    if (!mounted) return;
+    setState(() {
+      _sessions = loaded;
+    });
+  }
+
+  Widget _buildTimeline() {
+    return ListView.builder(
+      itemCount: _sessions.length,
+      itemBuilder: (context, index) {
+        final session = _sessions[index];
+        final formattedDate =
+            "${session.date.day}/${session.date.month}/${session.date.year}";
+
+        return ListTile(
+          leading: const Icon(Icons.circle, color: Colors.deepPurple),
+          title: Text(formattedDate, style: const TextStyle(fontWeight: FontWeight.bold)),
+          subtitle: Text('Minutos: ${session.minutes} | Tema: ${session.theme}'),
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (_) => AlertDialog(
+                title: const Text('Detalle de la sesión'),
+                content: Text(
+                  'Fecha: $formattedDate\nMinutos usados: ${session.minutes}\nTema: ${session.theme}',
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Cerrar'),
+                  )
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final sessions = _getSessionsForDay(_selectedDay ?? DateTime.now());
-
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -42,25 +79,13 @@ class _CronolinePageState extends State<CronolinePage> {
       body: Column(
         children: [
           const SizedBox(height: 20),
-          const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Text(
-              'Línea cronológica de sesiones de uso:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
+          const Text(
+            'Línea cronológica de sesiones de temporizador',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 10),
-          SessionTimeline(sessions: sessions),
+          Expanded(child: _buildTimeline()),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Botón "+" presionado')),
-          );
-        },
-        backgroundColor: const Color.fromARGB(255, 209, 141, 218),
-        child: const Icon(Icons.add),
       ),
     );
   }
