@@ -13,6 +13,7 @@ import 'package:pomart/entity/daily_theme.dart';
 import 'package:pomart/entity/custom_tag.dart';
 import 'package:pomart/entity/app_settings.dart';
 import 'package:pomart/entity/session_entry.dart';
+import 'package:pomart/widgets/drawer.dart';  // Importa tu drawer común
 
 class TimerPage extends StatefulWidget {
   const TimerPage({super.key, required this.title});
@@ -57,7 +58,7 @@ class _TimerPageState extends State<TimerPage> {
   }
 
   late VoidCallback _settingsListener;
-  late AppSettings _settings; // Guardamos aquí la instancia
+  late AppSettings _settings;
 
   @override
   void initState() {
@@ -81,9 +82,7 @@ class _TimerPageState extends State<TimerPage> {
     _timer?.cancel();
     _audioPlayer.dispose();
     _tagController.dispose();
-
     _settings.removeListener(_settingsListener);
-
     super.dispose();
   }
 
@@ -269,11 +268,24 @@ class _TimerPageState extends State<TimerPage> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(
+          widget.title,
+          style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+        ),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            color: Theme.of(context).colorScheme.onPrimary,
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
         actions: [
           if (settings.isMusicEnabled) ...[
             IconButton(
               icon: const Icon(Icons.music_note),
+              color: Theme.of(context).colorScheme.onPrimary,
               tooltip: 'Seleccionar música',
               onPressed: () async {
                 final selected = await showDialog<String>(
@@ -297,6 +309,7 @@ class _TimerPageState extends State<TimerPage> {
             ),
             IconButton(
               icon: const Icon(Icons.volume_up),
+              color: Theme.of(context).colorScheme.onPrimary,
               tooltip: 'Ajustar volumen',
               onPressed: () {
                 showDialog(
@@ -323,6 +336,8 @@ class _TimerPageState extends State<TimerPage> {
           ],
         ],
       ),
+
+      drawer: const AppDrawer(currentRoute: '/timer'),  // Aquí el drawer
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),

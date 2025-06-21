@@ -5,13 +5,13 @@ class DailyTheme {
     'Naturaleza',
     'Animales',
     'Robots',
-    'Insectos',
+    'Comida',
     'Anime',
     'Cartoon',
     'Halloween',
   ];
 
-   String getThemeToday() {
+  String getThemeToday() {
     final now = DateTime.now();
     final seed = now.year * 10000 + now.month * 100 + now.day;
     final rng = Random(seed);

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pomart/entity/app_settings.dart';
+import 'package:pomart/widgets/drawer.dart'; 
 
 class Preferences extends StatelessWidget {
   const Preferences({super.key});
@@ -12,7 +13,21 @@ class Preferences extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Preferencias')),
+      appBar: AppBar(
+        title: Text(
+          'Preferencias',
+          style: TextStyle(color: colorScheme.onPrimary),
+        ),
+        backgroundColor: colorScheme.primary,
+        foregroundColor: colorScheme.onPrimary,
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
+      ),
+      drawer: const AppDrawer(currentRoute: '/preferences'),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

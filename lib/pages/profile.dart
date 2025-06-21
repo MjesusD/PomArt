@@ -1,60 +1,44 @@
-import 'dart:convert';
 import 'dart:io'; 
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'package:pomart/widgets/profile_header.dart';
-import 'package:pomart/widgets/gallery_grid.dart';
 import 'package:pomart/entity/user_profile.dart';
-import 'package:pomart/entity/session_entry.dart';
 import 'package:pomart/pages/edit_profile.dart';
+import 'package:pomart/widgets/drawer.dart';
+import 'package:pomart/widgets/weekly_streak.dart';
+import 'package:pomart/entity/session_entry.dart';
 import 'package:pomart/pages/image_preview.dart';
 
-import 'package:pomart/widgets/weekly_streak.dart';
-
-
-final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
-
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key, required this.title});
   final String title;
+
+  const ProfilePage({super.key, required this.title});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> with RouteAware {
-  int _weeklyStreak = 0;
+class _ProfilePageState extends State<ProfilePage> {
   UserProfile? profile;
+  int streak = 0; // Racha semanal
 
   @override
   void initState() {
     super.initState();
     _loadUserProfile();
-    _loadWeeklyStreak();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    routeObserver.subscribe(this, ModalRoute.of(context)!);
-  }
-
-  @override
-  void dispose() {
-    routeObserver.unsubscribe(this);
-    super.dispose();
-  }
-
-  @override
-  void didPopNext() {
-    _loadUserProfile();
-    _loadWeeklyStreak();
+    _calculateStreakFromSessions();
   }
 
   Future<void> _loadUserProfile() async {
     final prefs = await SharedPreferences.getInstance();
-    final username = prefs.getString('username') ?? 'Desconocido';
+    final username = prefs.getString('username');
+
+    if (username == null || username.isEmpty) {
+      if (!mounted) return;
+      Navigator.of(context).pushReplacementNamed('/login');
+      return;
+    }
+
     final bio = prefs.getString('bio') ?? 'Bienvenido a tu perfil de PomArt';
     final imagePath = prefs.getString('profileImagePath') ?? '';
     final images = prefs.getStringList('galleryImages') ?? [];
@@ -69,6 +53,8 @@ class _ProfilePageState extends State<ProfilePage> with RouteAware {
       }
     }
 
+    if (!mounted) return;
+
     setState(() {
       profile = UserProfile(
         name: username,
@@ -81,73 +67,102 @@ class _ProfilePageState extends State<ProfilePage> with RouteAware {
     });
   }
 
-  Future<void> _loadWeeklyStreak() async {
+  Future<void> _calculateStreakFromSessions() async {
     final prefs = await SharedPreferences.getInstance();
-    final storedSessions = prefs.getStringList('session_entries') ?? [];
+    final stored = prefs.getStringList('session_entries') ?? [];
 
-    final sessionDates = storedSessions
-        .map((e) => SessionEntry.fromJson(jsonDecode(e)).date)
-        .toList();
+    final sessions = stored
+        .map((e) => SessionEntry.fromJson(jsonDecode(e)))
+        .toList()
+      ..sort((a, b) => b.date.compareTo(a.date)); // Orden descendente
 
-    final streak = calculateWeeklyStreak(sessionDates);
+    if (!mounted) return;
+
+    final calculatedStreak = _calculateStreak(sessions);
 
     setState(() {
-      _weeklyStreak = streak;
+      streak = calculatedStreak;
     });
+
+    await prefs.setInt('weeklyStreak', calculatedStreak);
   }
 
-  int calculateWeeklyStreak(List<DateTime> sessionDates) {
-    if (sessionDates.isEmpty) return 0;
+  int _calculateStreak(List<SessionEntry> sessions) {
+    if (sessions.isEmpty) return 0;
 
-    final today = DateTime.now();
+    List<DateTime> dates = sessions
+        .map((s) => DateTime(s.date.year, s.date.month, s.date.day))
+        .toSet()
+        .toList();
 
-    DateTime normalize(DateTime d) => DateTime(d.year, d.month, d.day);
-    final normalizedToday = normalize(today);
+    dates.sort((a, b) => b.compareTo(a)); // Orden descendente
 
-    final uniqueDatesSet = sessionDates.map(normalize).toSet();
+    int streakCount = 1;
+    DateTime currentDay = dates[0];
 
-    int streak = 0;
+    for (int i = 1; i < dates.length; i++) {
+      final diff = currentDay.difference(dates[i]).inDays;
 
-    for (int i = 0; i < 7; i++) {
-      final dayToCheck = normalizedToday.subtract(Duration(days: i));
-      if (uniqueDatesSet.contains(dayToCheck)) {
-        streak++;
-      } else {
+      if (diff == 1) {
+        streakCount++;
+        currentDay = dates[i];
+      } else if (diff > 1) {
         break;
       }
     }
 
-    return streak;
+    if (streakCount > 7) {
+      streakCount = streakCount % 7;
+    }
+
+    return streakCount;
+  }
+
+  Future<void> _handleMenuSelection(String value) async {
+    switch (value) {
+      case 'edit':
+        if (profile == null) return;
+        final updatedProfile = await Navigator.push<UserProfile>(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EditProfilePage(profile: profile!),
+          ),
+        );
+        if (!mounted) return;
+        if (updatedProfile != null) {
+          setState(() {
+            profile = updatedProfile;
+          });
+        }
+        break;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
-        backgroundColor: theme.colorScheme.inversePrimary,
+        title: Text(
+          widget.title,
+          style: TextStyle(color: colorScheme.onPrimary),
+        ),
+        backgroundColor: colorScheme.primary,
+        foregroundColor: colorScheme.onPrimary,
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
         actions: [
           PopupMenuButton<String>(
-            onSelected: (value) async {
-              if (value == 'edit' && profile != null) {
-                final updatedProfile = await Navigator.push<UserProfile>(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EditProfilePage(profile: profile!),
-                  ),
-                );
-                if (updatedProfile != null) {
-                  setState(() {
-                    profile = updatedProfile;
-                  });
-                }
-              }
-            },
-            itemBuilder: (context) => [
-              const PopupMenuItem<String>(
+            iconColor: colorScheme.onPrimary,
+            onSelected: _handleMenuSelection,
+            itemBuilder: (context) => const [
+              PopupMenuItem<String>(
                 value: 'edit',
                 child: Text('Editar perfil'),
               ),
@@ -155,45 +170,112 @@ class _ProfilePageState extends State<ProfilePage> with RouteAware {
           ),
         ],
       ),
+      drawer: const AppDrawer(currentRoute: '/profile'),
       body: profile == null
           ? const Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: const EdgeInsets.all(16.0),
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  ProfileHeader(profile: profile!),
-                  const SizedBox(height: 16),
-                  Center(
-                    child: Column(
-                      children: [
-                        Text(
-                          'Racha semanal',
-                          style: textTheme.headlineSmall
-                              ?.copyWith(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 8),
-                        WeeklyStreak(daysCompleted: _weeklyStreak > 7 ? 7 : _weeklyStreak),
-                      ],
+                children: [
+                  CircleAvatar(
+                    radius: 50,
+                    backgroundColor: colorScheme.primaryContainer,
+                    backgroundImage: profile!.profileImage.isNotEmpty
+                        ? FileImage(File(profile!.profileImage))
+                        : null,
+                    child: profile!.profileImage.isEmpty
+                        ? Icon(Icons.person,
+                            size: 50, color: colorScheme.onPrimaryContainer)
+                        : null,
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    profile!.name,
+                    style: textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.onSurface,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 4),
                   Text(
-                    'Mi progreso:',
-                    style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                    'Edad: ${profile!.age} años',
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurface,
+                    ),
                   ),
                   const SizedBox(height: 8),
-                  GalleryGrid(
-                    images: profile!.galleryImages,
-                    onImageTap: (imagePath) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => ImagePreviewPage(imagePath: imagePath),
-                        ),
-                      );
-                    },
+                  Text(
+                    profile!.bio,
+                    style: textTheme.bodyLarge?.copyWith(
+                      color: colorScheme.onSurface,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
+
+                  if (streak > 0) ...[
+                    const SizedBox(height: 16),
+                    WeeklyStreak(daysCompleted: streak > 7 ? 7 : streak),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Racha de uso: $streak día${streak > 1 ? 's' : ''}',
+                      style: textTheme.titleMedium?.copyWith(
+                        color: colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+
+                  const Divider(height: 32),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.timer_outlined, color: colorScheme.primary),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${profile!.minutesUsed} minutos usando la app',
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurface,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'Tu progreso',
+                    style: textTheme.titleMedium?.copyWith(
+                      color: colorScheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  profile!.galleryImages.isEmpty
+                      ? Text(
+                          'Aún no publicas tus obras',
+                          style: TextStyle(color: colorScheme.onSurface),
+                        )
+                      : GridView.count(
+                          crossAxisCount: 3,
+                          shrinkWrap: true,
+                          crossAxisSpacing: 8,
+                          mainAxisSpacing: 8,
+                          physics: const NeverScrollableScrollPhysics(),
+                          children: profile!.galleryImages.map((imgPath) {
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        ImagePreviewPage(imagePath: imgPath),
+                                  ),
+                                );
+                              },
+                              child: Image.file(
+                                File(imgPath),
+                                fit: BoxFit.cover,
+                              ),
+                            );
+                          }).toList(),
+                        ),
                 ],
               ),
             ),

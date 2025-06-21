@@ -84,11 +84,9 @@ flutter:
   assets:
     - lib/data/models/questions.json
     - assets/images/profile.jpg
-    - assets/images/image1.png
-    - assets/images/image2.png
-    - assets/images/image3.png
-    - assets/images/user1.png
-    - assets/images/user2.png
+    - assets/images/anime/image1.png
+    - assets/images/anime/image2.png
+    - assets/images/anime/image3.png
     - assets/images/user3.png
     - assets/images/user4.png
     - assets/images/logo.png
@@ -98,7 +96,24 @@ flutter:
     - assets/music/music2.mp3
     - assets/music/music3.mp3
     - assets/music/music4.mp3
-
+    - assets/images/animals/animal1.jpg
+    - assets/images/animals/animal2.jpg
+    - assets/images/animals/animal3.jpg
+    - assets/images/cartoon/cartoon1.jpg
+    - assets/images/cartoon/cartoon2.jpg
+    - assets/images/cartoon/cartoon3.jpg
+    - assets/images/food/comida1.jpg
+    - assets/images/food/comida2.jpg
+    - assets/images/food/comida3.png
+    - assets/images/halloween/hallo2.jpg
+    - assets/images/halloween/hallo3.jpg
+    - assets/images/halloween/hallo4.jpg
+    - assets/images/nature/plantas1.jpg
+    - assets/images/nature/plantas2.jpg
+    - assets/images/nature/plantas3.jpg
+    - assets/images/robots_t/robot1.jpg
+    - assets/images/robots_t/robot2.jpg
+    - assets/images/robots_t/robot3.jpg
 
   
 

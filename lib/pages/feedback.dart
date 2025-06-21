@@ -41,13 +41,13 @@ class _FeedbackPageState extends State<FeedbackPage> {
         margin: const EdgeInsets.symmetric(vertical: 8),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: colorScheme.onSurfaceVariant.withAlpha(220), // Fondo menos claro y semi-opaco
+          color: colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withAlpha(40),
-              blurRadius: 6,
-              offset: const Offset(0, 3),
+              color: colorScheme.shadow.withValues(),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
@@ -61,14 +61,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
         question.question,
         style: theme.textTheme.titleMedium?.copyWith(
           fontWeight: FontWeight.bold,
-          color: colorScheme.onSurface.withAlpha(230),
-          shadows: [
-            Shadow(
-              color: Colors.black.withAlpha(100),
-              offset: const Offset(0, 1),
-              blurRadius: 2,
-            ),
-          ],
+          color: colorScheme.onSurface,
         ),
       ),
     );
@@ -83,42 +76,19 @@ class _FeedbackPageState extends State<FeedbackPage> {
               DropdownButtonFormField<int>(
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: colorScheme.surface.withAlpha(230),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  labelStyle: TextStyle(
-                    color: colorScheme.onSurface.withAlpha(230),
-                    fontWeight: FontWeight.w600,
-                    shadows: [
-                      Shadow(
-                        color: Colors.black.withAlpha(80),
-                        offset: const Offset(0, 1),
-                        blurRadius: 1,
-                      ),
-                    ],
-                  ),
+                  fillColor: colorScheme.surface,
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                 ),
-                dropdownColor: colorScheme.surface.withAlpha(230),
+                dropdownColor: colorScheme.surface,
                 items: List.generate(5, (i) => i + 1)
                     .map((value) => DropdownMenuItem(
                           value: value,
-                          child: Text(
-                            value.toString(),
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              color: colorScheme.onSurface,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                          child: Text('$value', style: theme.textTheme.bodyLarge),
                         ))
                     .toList(),
                 value: answers[question.id],
                 validator: (val) => val == null ? 'Selecciona una opción' : null,
                 onChanged: (val) => setState(() => answers[question.id] = val),
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: colorScheme.onSurface,
-                  fontWeight: FontWeight.w600,
-                ),
               ),
             ],
           ),
@@ -137,26 +107,8 @@ class _FeedbackPageState extends State<FeedbackPage> {
                 onSaved: (val) => answers[question.id] = val,
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: colorScheme.surface.withAlpha(230),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                  labelStyle: TextStyle(
-                    color: colorScheme.onSurface.withAlpha(230),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurface,
-                  fontWeight: FontWeight.w600,
-                  shadows: [
-                    Shadow(
-                      color: Colors.black.withAlpha(50),
-                      offset: const Offset(0, 1),
-                      blurRadius: 1,
-                    ),
-                  ],
+                  fillColor: colorScheme.surface,
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                 ),
               ),
             ],
@@ -172,35 +124,19 @@ class _FeedbackPageState extends State<FeedbackPage> {
               DropdownButtonFormField<String>(
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: colorScheme.surface.withAlpha(230),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  labelStyle: TextStyle(
-                    color: colorScheme.onSurface.withAlpha(230),
-                    fontWeight: FontWeight.w600,
-                  ),
+                  fillColor: colorScheme.surface,
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                 ),
-                dropdownColor: colorScheme.surface.withAlpha(230),
+                dropdownColor: colorScheme.surface,
                 items: ['Sí', 'No']
                     .map((opt) => DropdownMenuItem(
                           value: opt,
-                          child: Text(
-                            opt,
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              color: colorScheme.onSurface,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                          child: Text(opt, style: theme.textTheme.bodyLarge),
                         ))
                     .toList(),
                 value: answers[question.id],
                 validator: (val) => val == null ? 'Selecciona una opción' : null,
                 onChanged: (val) => setState(() => answers[question.id] = val),
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: colorScheme.onSurface,
-                  fontWeight: FontWeight.w600,
-                ),
               ),
             ],
           ),
@@ -223,7 +159,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
       return;
     }
 
-    final StringBuffer body = StringBuffer();
+    final body = StringBuffer();
     body.writeln('Usuario: ${_userIdController.text.trim()}');
     body.writeln('Opiniones:');
     for (var q in questions) {
@@ -256,7 +192,11 @@ class _FeedbackPageState extends State<FeedbackPage> {
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Valorar / Dar opinión')),
+      appBar: AppBar(
+        title: const Text('Valorar / Dar opinión'),
+        backgroundColor: colorScheme.primary,
+        foregroundColor: colorScheme.onPrimary,
+      ),
       body: questions.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : Padding(
@@ -269,35 +209,14 @@ class _FeedbackPageState extends State<FeedbackPage> {
                       controller: _userIdController,
                       decoration: InputDecoration(
                         labelText: 'Tu identificación (nombre, email, etc.)',
+                        prefixIcon: Icon(Icons.person, color: colorScheme.primary),
                         filled: true,
-                        fillColor: colorScheme.onSurfaceVariant.withAlpha(220),
+                        fillColor: colorScheme.surfaceContainerHighest,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        prefixIcon: Icon(Icons.person, color: colorScheme.primary),
-                        labelStyle: TextStyle(
-                          color: colorScheme.onSurface.withAlpha(230),
-                          fontWeight: FontWeight.bold,
-                          shadows: [
-                            Shadow(
-                              color: Colors.black.withAlpha(100),
-                              offset: const Offset(0, 1),
-                              blurRadius: 2,
-                            ),
-                          ],
-                        ),
                       ),
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        color: colorScheme.onSurface.withAlpha(230),
-                        fontWeight: FontWeight.w600,
-                        shadows: [
-                          Shadow(
-                            color: Colors.black.withAlpha(50),
-                            offset: const Offset(0, 1),
-                            blurRadius: 1,
-                          ),
-                        ],
-                      ),
+                      style: theme.textTheme.bodyLarge,
                       validator: (val) => val == null || val.trim().isEmpty
                           ? 'Por favor ingresa tu identificación'
                           : null,
@@ -314,6 +233,8 @@ class _FeedbackPageState extends State<FeedbackPage> {
                         textStyle: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
+                        backgroundColor: colorScheme.primary,
+                        foregroundColor: colorScheme.onPrimary,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),

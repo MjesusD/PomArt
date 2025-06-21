@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pomart/entity/session_entry.dart';
+import 'package:pomart/widgets/drawer.dart';
 
 class CronolinePage extends StatefulWidget {
   const CronolinePage({super.key, required this.title});
@@ -71,17 +72,35 @@ class _CronolinePageState extends State<CronolinePage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
-        backgroundColor: const Color.fromARGB(255, 184, 5, 255),
+        title: Text(
+          widget.title,
+          style: TextStyle(color: colorScheme.onPrimary),
+        ),
+        backgroundColor: colorScheme.primary,
+        foregroundColor: colorScheme.onPrimary,
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
       ),
+      drawer: const AppDrawer(currentRoute: '/cronoline'),
       body: Column(
         children: [
           const SizedBox(height: 20),
-          const Text(
-            'Línea cronológica de sesiones de temporizador',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              'Línea cronológica de sesiones de temporizador',
+              style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
           ),
           const SizedBox(height: 10),
           Expanded(child: _buildTimeline()),

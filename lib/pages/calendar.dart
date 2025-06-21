@@ -7,6 +7,7 @@ import 'package:pomart/widgets/custom_calendar.dart';
 import 'package:pomart/entity/daily_theme.dart';
 import 'package:pomart/entity/calendar_entry.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pomart/widgets/drawer.dart';  //nuevo drawer
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key, required this.title});
@@ -165,15 +166,12 @@ class _CalendarPageState extends State<CalendarPage> with SingleTickerProviderSt
 
             if (confirm != true) return;
 
-            // Eliminar entrada de la lista
             setState(() {
               _entries.remove(entry);
             });
 
-            // Guardar cambios en SharedPreferences para calendario
             await _saveEntries();
 
-            // También eliminar de la lista galleryImages para que desaparezca de la galería del perfil
             final prefs = await SharedPreferences.getInstance();
             List<String> galleryImages = prefs.getStringList('galleryImages') ?? [];
             if (galleryImages.contains(entry.imagePath)) {
@@ -226,11 +224,17 @@ class _CalendarPageState extends State<CalendarPage> with SingleTickerProviderSt
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: Text(widget.title),
+          title: Text(
+            widget.title,
+            style: TextStyle(color: colorScheme.onPrimary),
+          ),
           backgroundColor: colorScheme.primary,
+          foregroundColor: colorScheme.onPrimary,
           bottom: TabBar(
             controller: _tabController,
             indicatorColor: colorScheme.onPrimary,
+            labelColor: colorScheme.onPrimary,
+            unselectedLabelColor: colorScheme.onPrimary.withAlpha(60),
             tabs: const [
               Tab(text: 'Día'),
               Tab(text: 'Mes'),
@@ -238,7 +242,15 @@ class _CalendarPageState extends State<CalendarPage> with SingleTickerProviderSt
             ],
             onTap: (_) => setState(() {}),
           ),
+          leading: Builder(
+            builder: (context) => IconButton(
+              icon: const Icon(Icons.menu),
+              color: colorScheme.onPrimary,
+              onPressed: () => Scaffold.of(context).openDrawer(),
+            ),
+          ),
         ),
+        drawer: const AppDrawer(currentRoute: '/calendar'),
         body: TabBarView(
           controller: _tabController,
           children: [
@@ -276,24 +288,35 @@ class _CalendarPageState extends State<CalendarPage> with SingleTickerProviderSt
                 if (_selectedDay != null)
                   Text(
                     'Día seleccionado: ${_selectedDay!.day}/${_selectedDay!.month}/${_selectedDay!.year}',
-                    style: textTheme.bodyLarge,
+                    style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface),
                   ),
                 const Divider(),
                 Expanded(
                   child: filteredEntries.isEmpty
-                      ? const Center(child: Text('No hay imágenes para esta selección'))
+                      ? Center(
+                          child: Text(
+                            'No hay imágenes para esta selección',
+                            style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
+                          ),
+                        )
                       : ListView(children: filteredEntries.map(_buildEntryCard).toList()),
                 ),
               ],
             ),
             Center(
               child: filteredEntries.isEmpty
-                  ? const Text('No hay imágenes para este mes', style: TextStyle(fontSize: 18))
+                  ? Text(
+                      'No hay imágenes para este mes',
+                      style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface, fontSize: 18),
+                    )
                   : ListView(children: filteredEntries.map(_buildEntryCard).toList()),
             ),
             Center(
               child: filteredEntries.isEmpty
-                  ? const Text('No hay imágenes para este año', style: TextStyle(fontSize: 18))
+                  ? Text(
+                      'No hay imágenes para este año',
+                      style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface, fontSize: 18),
+                    )
                   : ListView(children: filteredEntries.map(_buildEntryCard).toList()),
             ),
           ],
@@ -301,7 +324,7 @@ class _CalendarPageState extends State<CalendarPage> with SingleTickerProviderSt
         floatingActionButton: FloatingActionButton(
           onPressed: _pickImage,
           backgroundColor: colorScheme.primary,
-          child: const Icon(Icons.add_a_photo),
+          child: Icon(Icons.add_a_photo, color: colorScheme.onPrimary),
         ),
       ),
     );
