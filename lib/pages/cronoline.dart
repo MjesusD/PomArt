@@ -74,7 +74,7 @@ class _CronolinePageState extends State<CronolinePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
-        backgroundColor: const Color.fromARGB(255, 209, 141, 218),
+        backgroundColor: const Color.fromARGB(255, 184, 5, 255),
       ),
       body: Column(
         children: [

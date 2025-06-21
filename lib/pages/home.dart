@@ -6,6 +6,7 @@ import 'package:pomart/pages/cronoline.dart';
 import 'package:pomart/widgets/feed_view.dart';
 import 'package:pomart/pages/preferences.dart';
 import 'package:pomart/entity/daily_theme.dart';
+import 'package:pomart/pages/about.dart';
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key, required this.title});
@@ -160,53 +161,62 @@ class MyHomePage extends StatelessWidget {
                 );
               },
             ),
+            ListTile(
+              title: const Text('Acerca de'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AboutPage(),
+                  ),
+                );
+              },
+            ),
           ],
         ),
       ),
-
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Row(
-              children: [
-                CircleAvatar(
-                  radius: 24,
-                  backgroundImage: const AssetImage('assets/images/logo2.png'),
-                  backgroundColor: Colors.transparent,
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 24,
+                    backgroundImage: const AssetImage('assets/images/logo2.png'),
+                    backgroundColor: Colors.transparent,
+                  ),
+                  const SizedBox(width: 12),
+                  const Text('Información'),
+                ],
+              ),
+              content: const SingleChildScrollView(
+                child: Text(
+                  'PomArt es una app para ayudarte a mantener la concentración y creatividad '
+                  'usando técnicas Pomodoro con temas artísticos diarios y seguimiento visual de tus sesiones.',
+                  textAlign: TextAlign.justify,
                 ),
-                const SizedBox(width: 12),
-                const Text('Acerca de PomArt'),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cerrar'),
+                ),
               ],
             ),
-            content: const SingleChildScrollView(
-              child: Text(
-                'PomArt es una app para ayudarte a mantener la concentración y creatividad '
-                'usando técnicas Pomodoro con temas artísticos diarios y seguimiento visual de tus sesiones.',
-                textAlign: TextAlign.justify,
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Cerrar'),
-              ),
-            ],
+          );
+        },
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        child: ClipOval(
+          child: Image.asset(
+            'assets/images/logo2.png',
+            width: 30,
+            height: 30,
+            fit: BoxFit.cover,
           ),
-        );
-      },
-      tooltip: 'Acerca de PomArt',
-      backgroundColor: colorScheme.primary,
-      child: ClipOval(
-        child: Image.asset(
-          'assets/images/logo2.png',
-          width: 40,
-          height: 40,
-          fit: BoxFit.cover,
         ),
       ),
-    ),
 
     );
   }

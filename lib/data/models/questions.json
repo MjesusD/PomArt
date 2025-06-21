@@ -1,0 +1,37 @@
+[
+  {
+    "id": 1,
+    "question": "¿Cómo calificarías la experiencia general con la app? (1 Mala - 5 Buena)",
+    "type": "rating"  
+  },
+  {
+    "id": 2,
+    "question": "¿Qué tan fácil te resultó navegar por la aplicación? (1 Díficil - 5 Fácil)",
+    "type": "rating"
+  },
+  {
+    "id": 3,
+    "question": "¿Los menús y botones son claros y fáciles de entender?",
+    "type": "yesno"
+  },
+   {
+    "id": 4,
+    "question": "¿Te resultan útiles las funcionalidades ofrecidas por la aplicación?",
+    "type": "yesno"
+  },
+   {
+    "id": 5,
+    "question": "¿Encontraste alguna funcionalidad que no te sirvió o no te gustó?",
+    "type": "text"
+  },
+  {
+    "id": 6,
+    "question": "¿Qué es lo que más te gusta de la aplicación?",
+    "type": "text"
+  },
+  {
+    "id": 7,
+    "question": "¿Qué mejorarías o añadirías?",
+    "type": "text"
+  }
+]
