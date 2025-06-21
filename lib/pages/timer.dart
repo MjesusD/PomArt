@@ -13,7 +13,7 @@ import 'package:pomart/entity/daily_theme.dart';
 import 'package:pomart/entity/custom_tag.dart';
 import 'package:pomart/entity/app_settings.dart';
 import 'package:pomart/entity/session_entry.dart';
-import 'package:pomart/widgets/drawer.dart';  // Importa tu drawer común
+import 'package:pomart/widgets/drawer.dart';  
 
 class TimerPage extends StatefulWidget {
   const TimerPage({super.key, required this.title});
@@ -337,7 +337,7 @@ class _TimerPageState extends State<TimerPage> {
         ],
       ),
 
-      drawer: const AppDrawer(currentRoute: '/timer'),  // Aquí el drawer
+      drawer: const AppDrawer(currentRoute: '/timer'), 
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),

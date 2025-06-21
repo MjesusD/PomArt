@@ -30,11 +30,12 @@ class FeedCard extends StatelessWidget {
         },
       );
     } else {
-      // Puedes agregar un errorBuilder también para assets en caso de fallo (opcional)
-      imageWidget = Image.asset(
-        item.image,
+     
+      imageWidget = Image(
+        image: AssetImage(item.image),
         fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, size: 80),
+        errorBuilder: (context, error, stackTrace) =>
+            const Icon(Icons.broken_image, size: 80),
       );
     }
 

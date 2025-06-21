@@ -89,7 +89,7 @@ class MyHomePage extends StatelessWidget {
         ],
       ),
 
-      drawer: const AppDrawer(currentRoute: '/home'),  // Usa el drawer con ruta actual
+      drawer: const AppDrawer(currentRoute: '/home'),  
 
       floatingActionButton: FloatingActionButton(
         onPressed: () {

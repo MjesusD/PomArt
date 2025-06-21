@@ -16,7 +16,7 @@ class WeeklyStreak extends StatelessWidget {
         final completed = index < daysCompleted;
 
         return Container(
-          key: ValueKey(index), // para mejor identificación en la lista
+          key: ValueKey(index), //para mejor identificación en la lista
           margin: const EdgeInsets.symmetric(horizontal: 4),
           width: 30,
           height: 30,

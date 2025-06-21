@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class GalleryGrid extends StatelessWidget {
   final List<String> images;
-  final void Function(String imagePath)? onImageTap; // callback opcional
+  final void Function(String imagePath)? onImageTap; 
 
   const GalleryGrid({
     super.key,
