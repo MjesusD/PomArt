@@ -2,6 +2,7 @@
 # PomArt
 
 PomArt es una app diseñada para artistas y amateurs del dibujo, tanto tradicional como digital. Está pensada para quienes desean mejorar sus habilidades a través de la técnica Pomodoro, combinada con retos diarios creativos que permiten subir imágenes relacionadas con cada desafío. Incluye un sistema de seguimiento de progreso, integración de archivos para mantener la motivación y secciones como una home con publicaciones de otros usuarios. Además, cuenta con funcionalidades como calendario y línea temporal para organizar y compartir cada proceso artístico.
+
 ![Icono](https://github.com/user-attachments/assets/98aab025-f869-499e-96db-dabf62be10b4)
 
 
