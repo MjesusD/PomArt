@@ -152,36 +152,35 @@ class _FeedbackPageState extends State<FeedbackPage> {
 
     _formKey.currentState!.save();
 
-    if (_userIdController.text.trim().isEmpty) {
+    final id = _userIdController.text.trim();
+    if (id.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor ingresa tu identificación')),
       );
       return;
     }
 
-    final body = StringBuffer();
-    body.writeln('Usuario: ${_userIdController.text.trim()}');
-    body.writeln('Opiniones:');
+    final buffer = StringBuffer();
+    buffer.writeln('Usuario: $id');
+    buffer.writeln('Opiniones:');
     for (var q in questions) {
       final answer = answers[q.id] ?? 'Sin respuesta';
-      body.writeln('${q.question}: $answer');
+      buffer.writeln('${q.question}: $answer');
     }
 
-    final Uri emailUri = Uri(
-      scheme: 'mailto',
-      path: 'manueladuartetoro04@gmail.com',
-      queryParameters: {
-        'subject': 'Opinión PomArt',
-        'body': body.toString(),
-      },
+    final subject = Uri.encodeComponent('Retroalimentación de $id');
+    final body = Uri.encodeComponent(buffer.toString());
+
+    final Uri emailUri = Uri.parse(
+      'mailto:manueladuartetoro04@gmail.com?subject=$subject&body=$body',
     );
 
-    if (await canLaunchUrl(emailUri)) {
-      await launchUrl(emailUri);
-    } else {
+    if (!await launchUrl(emailUri, mode: LaunchMode.externalApplication)) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No se pudo abrir el cliente de correo')),
+        const SnackBar(
+          content: Text('No se pudo abrir la aplicación de correo'),
+        ),
       );
     }
   }
