@@ -24,7 +24,7 @@ class AboutPage extends StatelessWidget {
         ),
       ),
       drawer: const AppDrawer(currentRoute: '/about'),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -51,7 +51,7 @@ class AboutPage extends StatelessWidget {
               child: Text(
                 'Desarrollado por Manuela Duarte',
                 style: textTheme.bodyLarge?.copyWith(
-                  color: colorScheme.onSurface.withValues()
+                  color: colorScheme.onSurface.withValues(),
                 ),
               ),
             ),
@@ -73,7 +73,7 @@ class AboutPage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Padding(
-              padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(20),
                 child: Text(
                   'PomArt es una app para artistas y aficionados al dibujo que combina la técnica Pomodoro con retos creativos diarios.\n\n'
                   'Permite subir imágenes relacionadas con cada desafío, hacer seguimiento del progreso y compartir el proceso artístico con otros usuarios.\n\n'
@@ -85,9 +85,8 @@ class AboutPage extends StatelessWidget {
                   textAlign: TextAlign.justify,
                 ),
               ),
-
             ),
-            const Spacer(),
+            const SizedBox(height: 32),
             Center(
               child: ElevatedButton.icon(
                 icon: const Icon(Icons.feedback_outlined),
@@ -109,6 +108,7 @@ class AboutPage extends StatelessWidget {
                 },
               ),
             ),
+            const SizedBox(height: 32),
           ],
         ),
       ),

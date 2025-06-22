@@ -142,21 +142,18 @@ class _TimerPageState extends State<TimerPage> {
   void _startTimer() async {
     if (_isRunning) return;
 
-    if (!mounted) return;
     setState(() => _isRunning = true);
 
-    if (_settings.isMusicEnabled && mounted) await _playMusic();
+    if (_settings.isMusicEnabled) {
+      await _audioPlayer.stop(); // Reinicia música en caso de cambio de pista
+      await _playMusic();
+    }
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_remainingSeconds > 0) {
-        if (!mounted) {
-          timer.cancel();
-          return;
-        }
         setState(() => _remainingSeconds--);
       } else {
         timer.cancel();
-        if (!mounted) return;
         setState(() => _isRunning = false);
         _pauseMusic();
         _saveSessionEntry();
@@ -166,6 +163,7 @@ class _TimerPageState extends State<TimerPage> {
       }
     });
   }
+
 
   void _pauseTimer() {
     _timer?.cancel();
