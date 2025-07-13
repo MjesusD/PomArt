@@ -49,5 +49,5 @@ PomArt es una app diseñada para artistas y amateurs del dibujo, tanto tradicion
 
 ## 🔗 Links
 Presentación: 
-https://youtu.be/K8Mnnm5w6N0
+
 
